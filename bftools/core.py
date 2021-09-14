@@ -1,6 +1,6 @@
 from typing import *
 
-from .parser import CompiledBrainfuck
+from .compiler import CompiledBrainfuck
 
 
 class BrainfuckTools:
