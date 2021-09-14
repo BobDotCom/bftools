@@ -5,30 +5,18 @@ from .enums import Symbol, Code
 
 class ParsedBrainfuck:
     def __init__(self) -> None:
-        self._main: List[int] = [0 for _ in range(10000)]
-        self._position: int = 0
         self._raw_parsed: Optional[List[Symbol]] = []
         self._code: Optional[str] = None
 
     @property
-    def code(self):
+    def code(self) -> Optional[str]:
         return self._code
-
-    @property
-    def main(self) -> List[int]:
-        return self._main
-
-    @property
-    def position(self) -> int:
-        return self._position
 
     @property
     def raw_parsed(self) -> Tuple[Symbol]:
         if self._raw_parsed is None:
             raise ValueError("self._raw_parsed is None")
         return tuple(self._raw_parsed)
-
-    pos = position
 
     def parse(self, code: str) -> None:
         self._raw_parsed = []
