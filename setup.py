@@ -38,7 +38,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
         ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     license='MIT',
     project_urls={
         'Documentation': 'https://bftools.readthedocs.io/en/latest/index.html',
