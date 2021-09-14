@@ -3,7 +3,7 @@ from typing import *
 from .parser import ParsedBrainfuck
 
 
-class Compiler:
+class BrainfuckTools:
     def __init__(self) -> None:
         self._last_parsed: Optional[ParsedBrainfuck] = None
 

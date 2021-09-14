@@ -36,7 +36,7 @@ Usage
 .. code-block:: python
 
     import bftools
-    comp = bftools.Compiler()
+    comp = bftools.BrainfuckTools()
     py = comp.parse("++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>++++++++++++++++.---------------.++++++++++++++.+.")
     print(py.code)
 
