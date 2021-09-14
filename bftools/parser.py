@@ -3,7 +3,7 @@ from typing import List, Tuple, Optional
 from .enums import Symbol, Code
 
 
-class ParsedBrainfuck:
+class CompiledBrainfuck:
     def __init__(self) -> None:
         self._raw_parsed: Optional[List[Symbol]] = []
         self._code: Optional[str] = None

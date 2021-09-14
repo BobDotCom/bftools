@@ -1,22 +1,22 @@
 from typing import *
 
-from .parser import ParsedBrainfuck
+from .parser import CompiledBrainfuck
 
 
 class BrainfuckTools:
     def __init__(self) -> None:
-        self._last_parsed: Optional[ParsedBrainfuck] = None
+        self._last_compiled: Optional[CompiledBrainfuck] = None
 
     @property
-    def last_parsed(self) -> Optional[ParsedBrainfuck]:
-        return self._last_parsed
+    def last_compiled(self) -> Optional[CompiledBrainfuck]:
+        return self._last_compiled
 
-    def _new_parser(self) -> ParsedBrainfuck:
-        parser = ParsedBrainfuck()
-        self._last_parsed = parser
-        return parser
+    def _new_compiler(self) -> CompiledBrainfuck:
+        compiler = CompiledBrainfuck()
+        self._last_compiled = compiler
+        return compiler
 
-    def parse(self, code: str) -> ParsedBrainfuck:
-        parser = self._new_parser()
-        parser.parse(code)
-        return parser
+    def compile(self, code: str) -> CompiledBrainfuck:
+        compiler = self._new_compiler()
+        compiler.parse(code)
+        return compiler
