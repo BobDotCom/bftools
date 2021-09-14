@@ -12,6 +12,8 @@ A brainfuck toolbox for python.
 from .core import *
 from .enums import *
 from .compiler import *
+from .encoder import *
+from .tools import *
 
 __title__ = 'bftools'
 __author__ = 'BobDotCom'
