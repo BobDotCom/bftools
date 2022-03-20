@@ -22,6 +22,15 @@ bftools
 bftools {0}
 ===================""".format(__version__))
 
+extras_require = {
+    'docs': [
+        'sphinx==4.3.0',
+        'sphinxcontrib_trio==1.1.2',
+        'sphinxcontrib-websupport',
+        'sphinx_rtd_theme'
+    ]
+}
+
 setuptools.setup(
     name="bftools",
     version=__version__,
@@ -37,12 +46,13 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
-        ],
+    ],
+    extras_require=extras_require,
     python_requires='>=3.6',
     license='MIT',
     project_urls={
         'Documentation': 'https://bftools.readthedocs.io/en/latest/index.html',
-        'Source':        'https://github.com/BobDotCom/bftools',
-        'Tracker':       'https://github.com/BobDotCom/bftools/issues'
-        }
-    )
+        'Source': 'https://github.com/BobDotCom/bftools',
+        'Tracker': 'https://github.com/BobDotCom/bftools/issues'
+    }
+)

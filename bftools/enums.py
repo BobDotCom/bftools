@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class Code(Enum):
-    SHIFTRIGHT = "position += 1"
-    SHIFTLEFT = "position -= 1"
-    ADD = "main[position] += 1"
-    SUBTRACT = "main[position] -= 1"
+    SHIFTRIGHT = "position += {0}"
+    SHIFTLEFT = "position -= {0}"
+    ADD = "main[position] += {0}"
+    SUBTRACT = "main[position] -= {0}"
     STARTLOOP = "while main[position] != 0:"
     ENDLOOP = ""
     INPUT = "main[position] = ord(input())"

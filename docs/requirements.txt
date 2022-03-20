@@ -1,1 +1,1 @@
-sphinx-theme-material
+sphinx_rtd_theme
