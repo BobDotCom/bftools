@@ -91,7 +91,7 @@ class CompiledBrainfuck:
         self.result = """# Compiled using bftools (https://github.com/BobDotCom/bftools)
 
 # Initialization
-main = bytearray(10000)
+main = bytearray(30000)
 position = 0
 
 # Code from brainfuck
