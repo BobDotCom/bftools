@@ -27,7 +27,10 @@ extras_require = {
         'sphinx==4.3.0',
         'sphinxcontrib_trio==1.1.2',
         'sphinxcontrib-websupport',
-        'sphinx_rtd_theme'
+        'sphinx_rtd_theme',
+    ],
+    'minify': [
+        'python-minifier<=2.5',
     ]
 }
 

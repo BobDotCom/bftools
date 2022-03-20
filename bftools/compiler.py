@@ -88,13 +88,9 @@ class CompiledBrainfuck:
             except ValueError:  # TODO: add support for comments
                 # Since comments are not supported yet, let's just skip for now
                 continue
-        self.result = """# Compiled using bftools (https://github.com/BobDotCom/bftools)
-
-# Initialization
+        self.result = """
 main = bytearray(30000)
 position = 0
-
-# Code from brainfuck
 """
         indentation = 0
         stackable = (Symbol.SHIFTLEFT, Symbol.SHIFTRIGHT, Symbol.ADD, Symbol.SUBTRACT)
@@ -118,3 +114,18 @@ position = 0
                 indentation += 1
             elif symbol == Symbol.ENDLOOP:
                 indentation -= 1
+        try:
+            import python_minifier
+        except ImportError:
+            class Minifier:
+                @staticmethod
+                def minify(c: str, **kwargs) -> str:
+                    return c
+
+            python_minifier = Minifier
+        self.result = python_minifier.minify(
+            self.result,
+            remove_literal_statements=True,
+            rename_globals=True,
+        )
+        self.result = "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n" + self.result
