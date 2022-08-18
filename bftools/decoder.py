@@ -1,6 +1,5 @@
 import io
 import sys
-import warnings
 from typing import Optional
 
 from .exceptions import NotParsedException
