@@ -145,8 +145,8 @@ position = 0
 
                 @staticmethod
                 def minify(
-                    code_val: str, **kwargs: bool
-                ) -> str:  # pylint: disable=unused-argument
+                    code_val: str, **kwargs: bool  # pylint: disable=unused-argument
+                ) -> str:
                     """
                     Mock method for python_minifier
 

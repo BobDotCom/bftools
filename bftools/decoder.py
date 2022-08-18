@@ -24,6 +24,7 @@ class DecodedBrainfuck:
         functionality of the library.
     """
 
+    # pylint: disable=duplicate-code
     def __init__(self) -> None:
         self.result: Optional[str] = None
 
