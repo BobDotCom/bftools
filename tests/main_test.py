@@ -29,9 +29,9 @@ def run_conversion_test(comp, code):
     assert str(comp.decode(str(comp.encode(code)) + val)) == code
     code_out = io.StringIO()
     sys.stdout = code_out
-    exec(
+    exec(  # pylint: disable=exec-used  # nosec B102
         str(comp.compile(str(comp.encode(code))))
-    )  # pylint: disable=exec-used  # nosec B102
+    )
     sys.stdout = sys.__stdout__
     out = code_out.getvalue()
     code_out.close()
