@@ -40,7 +40,7 @@ extras_require = {
         "sphinx_rtd_theme",
     ],
     "minify": [
-        "python-minifier<=2.5",
+        "python-minifier<2.7",
     ],
 }
 
