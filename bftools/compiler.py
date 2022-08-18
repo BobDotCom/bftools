@@ -36,6 +36,29 @@ class CompiledBrainfuck:
         return self.result
 
     @property
+    def code(self) -> Optional[str]:
+        """The compiled code.
+
+        .. deprecated:: 0.3.0
+            The code property is deprecated and will be removed in 0.5.0. Use :attr:`result` or
+            str(:class:`CompiledBrainfuck`) instead.
+
+        Returns
+        -------
+        Optional[str]
+            The compiled code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+            always calls :meth:`parse` before returning the object, this should never happen unless you override the
+            functionality of the library.
+        """
+        warnings.warn(
+            "The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
+            "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.result
+
+    @property
     def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
         """
         Raw parsed code

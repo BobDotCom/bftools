@@ -33,6 +33,29 @@ class DecodedBrainfuck:
             raise NotParsedException("The code has not been parsed yet.")
         return self.result
 
+    @property
+    def text(self) -> Optional[str]:
+        """The decoded text.
+
+        .. deprecated:: 0.3.0
+            The text property is deprecated and will be removed in 0.5.0. Use :attr:`result` or
+            str(:class:`DecodedBrainfuck`) instead.
+
+        Returns
+        -------
+        Optional[str]
+            The result text. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+            always calls :meth:`parse` before returning the object, this should never happen unless you override the
+            functionality of the library.
+        """
+        warnings.warn(
+            "The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
+            "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.result
+
     def parse(self, code: str) -> None:
         """Parse the given code.
 
