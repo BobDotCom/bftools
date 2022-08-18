@@ -8,7 +8,7 @@ from .tools import factor
 class EncodedBrainfuck:
     """An object to represent text encoded into Brainfuck.
 
-    To recieve the encoded Brainfuck, use :attr:`result` or
+    To receive the encoded Brainfuck, use :attr:`result` or
     str(:class:`EncodedBrainfuck`).
 
     .. warning::

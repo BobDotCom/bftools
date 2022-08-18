@@ -25,15 +25,15 @@ success() {
 getValueFromConfig current_version
 
 what_to_do
-ans="$?"
+answ="$?"
 
-if [[ $ans == 1 ]];
+if [[ $answ == 1 ]];
 then
     part="major"
-elif [[ $ans == 2 ]];
+elif [[ $answ == 2 ]];
 then
     part="minor"
-elif [[ $ans == 3 ]];
+elif [[ $answ == 3 ]];
 then
     part="patch"
 fi

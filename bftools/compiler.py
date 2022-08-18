@@ -8,7 +8,7 @@ from .exceptions import NotParsedException
 class CompiledBrainfuck:
     """An object to represent python compiled from Brainfuck.
 
-    To recieve the decoded text, use :attr:`result` or
+    To receive the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::

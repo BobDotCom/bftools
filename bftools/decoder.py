@@ -9,7 +9,7 @@ from .exceptions import NotParsedException
 class DecodedBrainfuck:
     """An object to represent text decoded from Brainfuck.
 
-    To recieve the decoded text, use :attr:`result` or
+    To receive the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::
