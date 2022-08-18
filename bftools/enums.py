@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class Code(Enum):
+    """
+    Enum for python code from a :class:`.Symbol`.
+    """
     SHIFTRIGHT = "position += {0}"
     SHIFTLEFT = "position -= {0}"
     ADD = "main[position] += {0}"
@@ -13,6 +16,9 @@ class Code(Enum):
 
 
 class Symbol(Enum):
+    """
+    Enum for brainfuck symbols.
+    """
     SHIFTRIGHT = ">"
     SHIFTLEFT = "<"
     ADD = "+"

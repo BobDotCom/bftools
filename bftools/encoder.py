@@ -1,28 +1,31 @@
 import warnings
 from typing import Optional
 
+from .exceptions import NotParsedException
 from .tools import factor
 
 
 class EncodedBrainfuck:
-    def __init__(self):
-        """An object to represent text encoded into Brainfuck. To recieve the encoded Brainfuck, use :attr:`result` or
-        str(:class:`EncodedBrainfuck`).
+    """An object to represent text encoded into Brainfuck. To recieve the encoded Brainfuck, use :attr:`result` or
+    str(:class:`EncodedBrainfuck`).
 
-        .. warning::
-            This class is not intended to be instantiated directly. Use :meth:`encode` or :meth:`BrainfuckTools.encode`
-            instead.
+    .. warning::
+        This class is not intended to be instantiated directly. Use :meth:`encode` or :meth:`BrainfuckTools.encode`
+        instead.
 
-        Attributes
-        ----------
-        result: Optional[str]
-            The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
-            always calls :meth:`parse` before returning the object, this should never happen unless you override the
-            functionality of the library.
-        """
+    Attributes
+    ----------
+    result: Optional[str]
+        The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        always calls :meth:`parse` before returning the object, this should never happen unless you override the
+        functionality of the library.
+    """
+    def __init__(self) -> None:
         self.result: Optional[str] = None
 
     def __str__(self) -> str:
+        if self.result is None:
+            raise NotParsedException("The code has not been parsed yet.")
         return self.result
 
     @property

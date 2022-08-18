@@ -9,11 +9,12 @@ A brainfuck toolbox for python.
 
 """
 
-from .core import *
+from .core import *  # pylint: disable=redefined-builtin
 from .enums import *
 from .compiler import *
 from .encoder import *
 from .tools import *
+from .exceptions import *
 
 __title__ = 'bftools'
 __author__ = 'BobDotCom'

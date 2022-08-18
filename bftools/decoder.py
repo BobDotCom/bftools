@@ -3,26 +3,30 @@ import sys
 import warnings
 from typing import Optional
 
+from .exceptions import NotParsedException
+
 
 class DecodedBrainfuck:
-    def __init__(self):
-        """An object to represent text decoded from Brainfuck. To recieve the decoded text, use :attr:`result` or
-        str(:class:`DecodedBrainfuck`).
+    """An object to represent text decoded from Brainfuck. To recieve the decoded text, use :attr:`result` or
+    str(:class:`DecodedBrainfuck`).
 
-        .. warning::
-            This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
-            instead.
+    .. warning::
+        This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
+        instead.
 
-        Attributes
-        ----------
-        result: Optional[str]
-            The result text. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
-            always calls :meth:`parse` before returning the object, this should never happen unless you override the
-            functionality of the library.
-        """
+    Attributes
+    ----------
+    result: Optional[str]
+        The result text. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        always calls :meth:`parse` before returning the object, this should never happen unless you override the
+        functionality of the library.
+    """
+    def __init__(self) -> None:
         self.result: Optional[str] = None
 
     def __str__(self) -> str:
+        if self.result is None:
+            raise NotParsedException("The code has not been parsed yet.")
         return self.result
 
     @property
@@ -69,7 +73,7 @@ class DecodedBrainfuck:
         """
         code_out = io.StringIO()
         sys.stdout = code_out
-        exec(code)
+        exec(code)  # pylint: disable=exec-used
         sys.stdout = sys.__stdout__
         out = code_out.getvalue()
         code_out.close()

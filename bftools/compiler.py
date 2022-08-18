@@ -2,28 +2,34 @@ import warnings
 from typing import List, Tuple, Optional
 
 from .enums import Symbol, Code
+from .exceptions import NotParsedException
 
 
 class CompiledBrainfuck:
+    """An object to represent python compiled from Brainfuck. To recieve the decoded text, use :attr:`result` or
+    str(:class:`DecodedBrainfuck`).
+
+    .. warning::
+        This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
+        instead.
+
+    Attributes
+    ----------
+    result: Optional[str]
+        The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        always calls :meth:`parse` before returning the object, this should never happen unless you override the
+        functionality of the library.
+    """
+    # pylint: disable=duplicate-code
+    # TODO: Use a base class to avoid duplicate code
     def __init__(self) -> None:
-        """An object to represent python compiled from Brainfuck. To recieve the decoded text, use :attr:`result` or
-        str(:class:`DecodedBrainfuck`).
-
-        .. warning::
-            This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
-            instead.
-
-        Attributes
-        ----------
-        result: Optional[str]
-            The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
-            always calls :meth:`parse` before returning the object, this should never happen unless you override the
-            functionality of the library.
-        """
         self._raw_parsed: Optional[List[Symbol]] = []
         self.result: Optional[str] = None
 
     def __str__(self) -> str:
+        if self.result is None:
+            raise NotParsedException("The code has not been parsed yet.")
+
         return self.result
 
     @property
@@ -46,7 +52,7 @@ class CompiledBrainfuck:
         return self.result
 
     @property
-    def raw_parsed(self) -> Optional[Tuple[Symbol]]:
+    def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
         """
         Raw parsed code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
@@ -96,31 +102,51 @@ position = 0
         stackable = (Symbol.SHIFTLEFT, Symbol.SHIFTRIGHT, Symbol.ADD, Symbol.SUBTRACT)
         stack_level = 0
         stack_type = None
-        for symbol in self.raw_parsed:
-            if symbol in stackable and stack_type == symbol:
-                stack_level += 1
-                stack_type = symbol
-                continue
-            else:
+        if self.raw_parsed is not None:
+            for symbol in self.raw_parsed:
+                if symbol in stackable and stack_type == symbol:
+                    stack_level += 1
+                    stack_type = symbol
+                    continue
                 if stack_level > 0:
-                    self.result += f"\n{' ' * 4 * indentation}{Code[stack_type.name].value.format(stack_level)}"
+                    self.result += (
+                        f"\n{' ' * 4 * indentation}"
+                        f"{Code[stack_type.name].value.format(stack_level)}" # type: ignore[union-attr]
+                    )
                     stack_level = 0
                 if symbol in stackable:
                     stack_level += 1
                     stack_type = symbol
                     continue
-            self.result += f"\n{' ' * 4 * indentation}{Code[symbol.name].value}"
-            if symbol == Symbol.STARTLOOP:
-                indentation += 1
-            elif symbol == Symbol.ENDLOOP:
-                indentation -= 1
+                self.result += f"\n{' ' * 4 * indentation}{Code[symbol.name].value}"
+                if symbol == Symbol.STARTLOOP:
+                    indentation += 1
+                elif symbol == Symbol.ENDLOOP:
+                    indentation -= 1
         try:
-            import python_minifier
+            import python_minifier  # type: ignore # pylint: disable=import-outside-toplevel
         except ImportError:
             class Minifier:
+                """
+                Mock class for python_minifier. Does nothing.
+                """
                 @staticmethod
-                def minify(c: str, **kwargs) -> str:
-                    return c
+                def minify(code_val: str, **kwargs: bool) -> str: # pylint: disable=unused-argument
+                    """
+                    Mock method for python_minifier. Does nothing.
+                    Parameters
+                    ----------
+                    code_val: str
+                        The code to minify.
+                    kwargs
+                        The keyword arguments to pass to the method.
+
+                    Returns
+                    -------
+                    str
+                        Simply returns the value of "code_val".
+                    """
+                    return code_val
 
             python_minifier = Minifier
         self.result = python_minifier.minify(
@@ -128,4 +154,4 @@ position = 0
             remove_literal_statements=True,
             rename_globals=True,
         )
-        self.result = "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n" + self.result
+        self.result = "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n" + (self.result or "")
