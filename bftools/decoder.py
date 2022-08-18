@@ -81,7 +81,7 @@ class DecodedBrainfuck:
         """
         code_out = io.StringIO()
         sys.stdout = code_out
-        exec(code)  # pylint: disable=exec-used
+        exec(code)  # pylint: disable=exec-used  # nosec B102
         sys.stdout = sys.__stdout__
         out = code_out.getvalue()
         code_out.close()
