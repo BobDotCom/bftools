@@ -1,15 +1,18 @@
-import bftools
-import pytest
 import random
 import string
 
+import pytest
 
-tests = [''.join(random.choice(string.ascii_letters) for _ in range(10)) for _ in range(1000)]
+import bftools
+
+tests = [
+    "".join(random.choice(string.ascii_letters) for _ in range(10)) for _ in range(1000)
+]
 
 
 @pytest.fixture
 def compiler():
-    """Returns a compiler"""
+    """Returns a compiler."""
     return bftools.BrainfuckTools()
 
 

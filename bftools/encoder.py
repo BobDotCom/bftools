@@ -6,7 +6,9 @@ from .tools import factor
 
 
 class EncodedBrainfuck:
-    """An object to represent text encoded into Brainfuck. To recieve the encoded Brainfuck, use :attr:`result` or
+    """An object to represent text encoded into Brainfuck.
+
+    To recieve the encoded Brainfuck, use :attr:`result` or
     str(:class:`EncodedBrainfuck`).
 
     .. warning::
@@ -20,6 +22,7 @@ class EncodedBrainfuck:
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
     """
+
     def __init__(self) -> None:
         self.result: Optional[str] = None
 
@@ -43,8 +46,12 @@ class EncodedBrainfuck:
             always calls :meth:`parse` before returning the object, this should never happen unless you override the
             functionality of the library.
         """
-        warnings.warn("The text property is deprecated since 0.3.0 and will be removed in 0.4.0. Use "
-                      "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "The text property is deprecated since 0.3.0 and will be removed in 0.4.0. Use "
+            "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.result
 
     def parse(self, text: str) -> None:
@@ -77,4 +84,6 @@ class EncodedBrainfuck:
             while 1 in factored:  # Does this cause an error for prime numbers?
                 added += 1
                 factored = factor(num + added)
-            self.result += f">{'+' * factored[0]}[<{'+' * factored[1]}>-]<{'-' * added}.>"
+            self.result += (
+                f">{'+' * factored[0]}[<{'+' * factored[1]}>-]<{'-' * added}.>"
+            )

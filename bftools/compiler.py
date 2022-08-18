@@ -1,12 +1,14 @@
 import warnings
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
-from .enums import Symbol, Code
+from .enums import Code, Symbol
 from .exceptions import NotParsedException
 
 
 class CompiledBrainfuck:
-    """An object to represent python compiled from Brainfuck. To recieve the decoded text, use :attr:`result` or
+    """An object to represent python compiled from Brainfuck.
+
+    To recieve the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::
@@ -20,6 +22,7 @@ class CompiledBrainfuck:
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
     """
+
     # pylint: disable=duplicate-code
     # TODO: Use a base class to avoid duplicate code
     def __init__(self) -> None:
@@ -47,14 +50,20 @@ class CompiledBrainfuck:
             always calls :meth:`parse` before returning the object, this should never happen unless you override the
             functionality of the library.
         """
-        warnings.warn("The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
-                      "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
+            "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.result
 
     @property
     def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
         """
-        Raw parsed code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        Raw parsed code
+
+        This will never be ``None`` unless :meth:`parse` has not been called. Since the library
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
 
@@ -111,7 +120,7 @@ position = 0
                 if stack_level > 0:
                     self.result += (
                         f"\n{' ' * 4 * indentation}"
-                        f"{Code[stack_type.name].value.format(stack_level)}" # type: ignore[union-attr]
+                        f"{Code[stack_type.name].value.format(stack_level)}"  # type: ignore[union-attr]
                     )
                     stack_level = 0
                 if symbol in stackable:
@@ -126,14 +135,22 @@ position = 0
         try:
             import python_minifier  # type: ignore # pylint: disable=import-outside-toplevel
         except ImportError:
+
             class Minifier:
                 """
-                Mock class for python_minifier. Does nothing.
+                Mock class for python_minifier
+
+                Does nothing.
                 """
+
                 @staticmethod
-                def minify(code_val: str, **kwargs: bool) -> str: # pylint: disable=unused-argument
+                def minify(
+                    code_val: str, **kwargs: bool
+                ) -> str:  # pylint: disable=unused-argument
                     """
-                    Mock method for python_minifier. Does nothing.
+                    Mock method for python_minifier
+
+                    Does nothing.
                     Parameters
                     ----------
                     code_val: str
@@ -154,4 +171,7 @@ position = 0
             remove_literal_statements=True,
             rename_globals=True,
         )
-        self.result = "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n" + (self.result or "")
+        self.result = (
+            "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n"
+            + (self.result or "")
+        )

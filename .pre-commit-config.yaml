@@ -18,7 +18,7 @@ repos:
     rev: v2.32.1
     hooks:
       - id: pyupgrade
-        args: [--py310-plus]
+        args: [--py36-plus]
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
@@ -32,35 +32,35 @@ repos:
   #    rev: 1.0.1
   #    hooks:
   #      - id: black-disable-checker
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
-        additional_dependencies: [flake8-typing-imports==1.12.0]
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
-        args: ["-rn", "-sn", "--rcfile=.pylintrc", "--fail-on=I"]
-      # We define an additional manual step to allow running pylint with a spelling
-      # checker in CI.
-      - id: pylint
-        alias: pylint-with-spelling
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
-        args: ["-rn", "-sn", "--rcfile=.pylintrc", "--fail-on=I", "--spelling-dict=en"]
-        stages: [manual]
-      - id: mypy
-        name: mypy
-        entry: mypy
-        language: system
-        types: [python]
-        args: ["--non-interactive"]
+  #  - repo: https://github.com/PyCQA/flake8
+  #    rev: 4.0.1
+  #    hooks:
+  #      - id: flake8
+  #        additional_dependencies: [flake8-typing-imports==1.12.0]
+  #  - repo: local
+  #    hooks:
+  #      - id: pylint
+  #        name: pylint
+  #        entry: pylint
+  #        language: system
+  #        types: [python]
+  #        args: ["-rn", "-sn", "--rcfile=.pylintrc", "--fail-on=I"]
+  #      # We define an additional manual step to allow running pylint with a spelling
+  #      # checker in CI.
+  #      - id: pylint
+  #        alias: pylint-with-spelling
+  #        name: pylint
+  #        entry: pylint
+  #        language: system
+  #        types: [python]
+  #        args: ["-rn", "-sn", "--rcfile=.pylintrc", "--fail-on=I", "--spelling-dict=en"]
+  #        stages: [manual]
+  #      - id: mypy
+  #        name: mypy
+  #        entry: mypy
+  #        language: system
+  #        types: [python]
+  #        args: ["--non-interactive"]
   #  - repo: https://github.com/myint/rstcheck
   #    rev: "v5.0.0"
   #    hooks:

@@ -6,7 +6,9 @@ from .encoder import EncodedBrainfuck
 
 
 class BrainfuckTools:
-    """The BrainfuckTools class is a wrapper for the compiler, decoder and encoder methods. It comes with some tools
+    """The BrainfuckTools class is a wrapper for the compiler, decoder and encoder methods.
+
+    It comes with some tools
     to make it easier to use, such as caching the last compiled code, the last decoded code and the last encoded
     text.
 
@@ -19,6 +21,7 @@ class BrainfuckTools:
     last_encoded: Optional[EncodedBrainfuck]
         The last encoded text.
     """
+
     def __init__(self) -> None:
         self.last_compiled: Optional[CompiledBrainfuck] = None
         self.last_decoded: Optional[DecodedBrainfuck] = None

@@ -7,7 +7,9 @@ from .exceptions import NotParsedException
 
 
 class DecodedBrainfuck:
-    """An object to represent text decoded from Brainfuck. To recieve the decoded text, use :attr:`result` or
+    """An object to represent text decoded from Brainfuck.
+
+    To recieve the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::
@@ -21,6 +23,7 @@ class DecodedBrainfuck:
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
     """
+
     def __init__(self) -> None:
         self.result: Optional[str] = None
 
@@ -44,8 +47,12 @@ class DecodedBrainfuck:
             always calls :meth:`parse` before returning the object, this should never happen unless you override the
             functionality of the library.
         """
-        warnings.warn("The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
-                      "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "The text property is deprecated since 0.3.0 and will be removed in 0.5.0. Use "
+            "DecodedBrainfuck.result or str(DecodedBrainfuck) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.result
 
     def parse(self, code: str) -> None:

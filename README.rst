@@ -39,4 +39,3 @@ Usage
     comp = bftools.BrainfuckTools()
     py = comp.compile("++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>++++++++++++++++.---------------.++++++++++++++.+.")
     print(py.code)
-

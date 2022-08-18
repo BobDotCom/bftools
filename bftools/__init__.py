@@ -1,5 +1,6 @@
 """
 Brainfuck Tools
+
 ~~~~~~~~~~~~~~~
 
 A brainfuck toolbox for python.
@@ -9,15 +10,15 @@ A brainfuck toolbox for python.
 
 """
 
-from .core import *  # pylint: disable=redefined-builtin
-from .enums import *
 from .compiler import *
+from .core import *  # pylint: disable=redefined-builtin
 from .encoder import *
-from .tools import *
+from .enums import *
 from .exceptions import *
+from .tools import *
 
-__title__ = 'bftools'
-__author__ = 'BobDotCom'
-__license__ = 'MIT'
-__copyright__ = 'Copyright 2021 BobDotCom'
-__version__ = '0.3.0'
+__title__ = "bftools"
+__author__ = "BobDotCom"
+__license__ = "MIT"
+__copyright__ = "Copyright 2021 BobDotCom"
+__version__ = "0.3.0"
