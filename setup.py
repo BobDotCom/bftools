@@ -34,7 +34,7 @@ bftools {}
 
 extras_require = {
     "docs": [
-        "sphinx==4.3.0",
+        "sphinx==5.1.1",
         "sphinxcontrib_trio==1.1.2",
         "sphinxcontrib-websupport",
         "sphinx_rtd_theme",
