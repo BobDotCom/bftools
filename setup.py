@@ -61,7 +61,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     extras_require=extras_require,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     license="MIT",
     project_urls={
         "Documentation": "https://bftools.readthedocs.io/en/latest/index.html",
