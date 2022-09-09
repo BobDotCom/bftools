@@ -1,5 +1,5 @@
 """
-Brainfuck Tools
+Brainfuck Tools.
 
 ~~~~~~~~~~~~~~~
 
@@ -7,7 +7,6 @@ A brainfuck toolbox for python.
 
 :copyright: (c) 2021 BobDotCom
 :license: MIT, see LICENSE for more details.
-
 """
 
 from .compiler import *

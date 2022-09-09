@@ -6,7 +6,6 @@ def factor(x: int) -> Tuple[int, int]:  # pylint: disable=invalid-name
     """
     Factors :attr:`x` into 2 numbers, a and b, such that a + b is as small as possible.
 
-
     Parameters
     -----------
     x: :class:`int`

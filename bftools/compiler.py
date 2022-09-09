@@ -37,7 +37,7 @@ class CompiledBrainfuck:
     @property
     def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
         """
-        Raw parsed code
+        Raw parsed code.
 
         This will never be ``None`` unless :meth:`parse` has not been called. Since the library
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
@@ -114,7 +114,7 @@ position = 0
 
             class Minifier:
                 """
-                Mock class for python_minifier
+                Mock class for python_minifier.
 
                 Does nothing.
                 """
@@ -124,7 +124,7 @@ position = 0
                     code_val: str, **kwargs: bool  # pylint: disable=unused-argument
                 ) -> str:
                     """
-                    Mock method for python_minifier
+                    Mock method for python_minifier.
 
                     Does nothing.
                     Parameters
