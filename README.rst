@@ -51,7 +51,7 @@ A brainfuck toolbox for python.
 
 PyPI: https://pypi.org/project/bftools/
 
-Docs: https://bftools.readthedocs.io/en/latest/
+Docs: https://bftools.rtfd.io/
 
 Installation
 ############
