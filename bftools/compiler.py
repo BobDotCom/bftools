@@ -71,16 +71,13 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
             except ValueError:  # TODO: add support for comments
                 # Since comments are not supported yet, let's just skip for now
                 continue
+        # TODO: Add correct IntegerSize typehints in compiled code
         self.result = f"""
 import sys
-import typing
-
-
-IntegerSize = {IntegerSize}
 
 
 class Main:
-    def __init__(self, array_size: int = 30000, int_size: IntegerSize = 8) -> None:
+    def __init__(self, array_size: int = 30000, int_size: int = 8) -> None:
         self._size = array_size
         self._data = bytearray(self._size)
         self._position = 0
@@ -91,7 +88,7 @@ class Main:
         return self._size
 
     @property
-    def int_size(self) -> IntegerSize:
+    def int_size(self) -> int:
         return self._int_size
 
     def shift_right(self, amount: int) -> None:

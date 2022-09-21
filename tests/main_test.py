@@ -6,6 +6,29 @@ import sys
 import pytest
 
 import bftools
+from bftools import (
+    CompiledBrainfuck,
+    DecodedBrainfuck,
+    EncodedBrainfuck,
+    HasSizes,
+    IntegerSize,
+)
+
+
+class MockCompiler(HasSizes):
+    def __init__(self, array_size: int = 30000, int_size: IntegerSize = 8) -> None:
+        super().__init__(array_size=array_size, int_size=int_size)
+        self._module = bftools
+
+    def compile(self, value: str) -> CompiledBrainfuck:
+        return self._module.compile_bf(value)
+
+    def decode(self, value: str) -> DecodedBrainfuck:
+        return self._module.decode_bf(value)
+
+    def encode(self, value: str) -> EncodedBrainfuck:
+        return self._module.encode_text(value)
+
 
 tests = [
     "".join(random.choice(string.ascii_letters) for _ in range(10)) for _ in range(10)
@@ -18,10 +41,20 @@ numbers = (
 )
 
 
-@pytest.fixture
-def compiler():
+@pytest.fixture(params=[random.randint(10000, 50000) for _ in range(2)])
+def array_size(request):
+    return request.param or None
+
+
+@pytest.fixture(params=[8, 16, 32, 64])
+def int_size(request):
+    return request.param or None
+
+
+@pytest.fixture(params=[bftools.BrainfuckTools, MockCompiler])
+def compiler(request, array_size, int_size):
     """Returns a compiler."""
-    return bftools.BrainfuckTools()
+    return request.param(array_size=array_size, int_size=int_size)
 
 
 def run_conversion_test(comp, code):
@@ -41,7 +74,6 @@ def run_conversion_test(comp, code):
 @pytest.mark.parametrize("code", tests)
 def test_conversions(compiler, code):
     run_conversion_test(compiler, code)
-    run_conversion_test(bftools, code)
 
 
 @pytest.mark.parametrize("num", numbers)
