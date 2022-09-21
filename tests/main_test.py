@@ -30,10 +30,6 @@ class MockCompiler(HasSizes):
         return self._module.encode_text(value)
 
 
-tests = [
-    "".join(random.choice(string.ascii_letters) for _ in range(10)) for _ in range(10)
-]
-
 numbers = (
     [random.randint(1, 10000) for _ in range(5)]  # Random numbers
     + [random.randint(1, 100) ** 2 for _ in range(5)]  # Squares
@@ -71,7 +67,11 @@ def run_conversion_test(comp, code):
     assert out == code
 
 
-@pytest.mark.parametrize("code", tests)
+@pytest.fixture(params=range(25))
+def code(int_size):
+    return "".join(random.choice([chr(i) for i in range(int_size)]) for _ in range(25))
+
+
 def test_conversions(compiler, code):
     run_conversion_test(compiler, code)
 

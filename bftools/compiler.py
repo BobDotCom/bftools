@@ -97,9 +97,19 @@ class Main:
     def shift_left(self, amount: int) -> None:
         return self.shift_right(-amount)
 
+    def _get_value(self) -> int:
+        value = self._data[self._position]
+        for i in range(1, self._int_size // 8):
+            value += self._data[self._position + i] << (i * 8)
+        return value
+
+    def _set_value(self, value: int) -> None:
+        self._data[self._position] = value & 0xFF
+        for i in range(1, self._int_size // 8):
+            self._data[self._position + i] = (value >> (i * 8)) & 0xFF
+
     def increment(self, amount: int) -> None:
-        # We could use += here, but that doesn't account for overflow
-        self._data[self._position] = (self._data[self._position] + amount) % (2 ** self._int_size)
+        self._set_value((self._get_value() + amount) % (2 ** self._int_size))
 
     def decrement(self, amount: int) -> None:
         return self.increment(-amount)
@@ -111,7 +121,7 @@ class Main:
         self._data[self._position] = ord(sys.stdin.read(1))
 
     def output(self) -> None:
-        print(chr(self._data[self._position]), end='')
+        print(chr(self._get_value()), end='')
 
 
 main = Main(array_size={self._array_size}, int_size={self._int_size})
