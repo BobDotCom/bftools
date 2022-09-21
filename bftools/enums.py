@@ -1,17 +1,22 @@
 from enum import Enum
 
+__all__ = (
+    "Code",
+    "Symbol",
+)
+
 
 class Code(Enum):
     """Enum for python code from a :class:`.Symbol`."""
 
-    SHIFTRIGHT = "position += {0}"
-    SHIFTLEFT = "position -= {0}"
-    ADD = "main[position] += {0}"
-    SUBTRACT = "main[position] -= {0}"
-    STARTLOOP = "while main[position] != 0:"
+    SHIFTRIGHT = "main.shift_right({0})"
+    SHIFTLEFT = "main.shift_left({0})"
+    ADD = "main.increment({0})"
+    SUBTRACT = "main.decrement({0})"
+    STARTLOOP = "while not main.is_zero():"
     ENDLOOP = ""
-    INPUT = "main[position] = ord(input())"
-    OUTPUT = "print(chr(main[position]), end='')"
+    INPUT = "main.get_input()"
+    OUTPUT = "main.output()"
 
 
 class Symbol(Enum):

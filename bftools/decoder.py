@@ -1,18 +1,19 @@
 import io
 import sys
-from typing import Optional
 
-from .exceptions import NotParsedException
+from .base import BrainfuckBase
+
+__all__ = ("DecodedBrainfuck",)
 
 
-class DecodedBrainfuck:
+class DecodedBrainfuck(BrainfuckBase):
     """An object to represent text decoded from Brainfuck.
 
     To receive the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::
-        This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
+        This class is not intended to be instantiated directly. Use :func:`decode_bf` or :meth:`BrainfuckTools.decode`
         instead.
 
     Attributes
@@ -23,16 +24,7 @@ class DecodedBrainfuck:
         functionality of the library.
     """
 
-    # pylint: disable=duplicate-code
-    def __init__(self) -> None:
-        self.result: Optional[str] = None
-
-    def __str__(self) -> str:
-        if self.result is None:
-            raise NotParsedException("The code has not been parsed yet.")
-        return self.result
-
-    def parse(self, code: str) -> None:
+    def parse(self, value: str) -> None:
         """Parse the given code.
 
         .. note::
@@ -47,7 +39,7 @@ class DecodedBrainfuck:
 
         Parameters
         ----------
-        code: str
+        value: str
             The code to parse.
 
         Raises
@@ -55,9 +47,10 @@ class DecodedBrainfuck:
         SyntaxError
             If the code is not syntactically correct.
         """
+        # TODO: Override builtin print function instead of capturing stdout
         code_out = io.StringIO()
         sys.stdout = code_out
-        exec(code)  # pylint: disable=exec-used  # nosec B102
+        exec(value)  # pylint: disable=exec-used  # nosec B102
         sys.stdout = sys.__stdout__
         out = code_out.getvalue()
         code_out.close()

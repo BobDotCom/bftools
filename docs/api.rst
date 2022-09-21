@@ -24,18 +24,19 @@ BrainfuckTools Class
 Shortcut Functions
 ~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: compile
+.. autofunction:: compile_bf
 
-.. autofunction:: decode
+.. autofunction:: decode_bf
 
-.. autofunction:: encode
+.. autofunction:: encode_text
 
 
 .. _converted_classes:
 
 Converted Classes
 -----------------
-These classes are returned by various methods from the :ref:`core_utilities`.
+These classes are returned by various methods from the :ref:`core_utilities`. You shouldn't need to create these directly or
+use any of their methods.
 
 .. autoclass:: CompiledBrainfuck
    :members:
@@ -54,3 +55,7 @@ Tools
 These are tools that are used internally by the :ref:`core_utilities`.
 
 .. autofunction:: factor
+
+.. autofunction:: factor_recursive
+
+.. autofunction:: factor_optimized

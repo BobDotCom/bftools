@@ -1,36 +1,32 @@
-from typing import Optional
+from .base import BrainfuckBase, HasSizes, IntegerSize
+from .tools import factor_optimized
 
-from .exceptions import NotParsedException
-from .tools import factor
+__all__ = ("EncodedBrainfuck",)
 
 
-class EncodedBrainfuck:
+class EncodedBrainfuck(BrainfuckBase, HasSizes):
     """An object to represent text encoded into Brainfuck.
 
     To receive the encoded Brainfuck, use :attr:`result` or
     str(:class:`EncodedBrainfuck`).
 
     .. warning::
-        This class is not intended to be instantiated directly. Use :meth:`encode` or :meth:`BrainfuckTools.encode`
+        This class is not intended to be instantiated directly. Use :func:`encode_text` or :meth:`BrainfuckTools.encode`
         instead.
 
     Attributes
     ----------
     result: Optional[str]
-        The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        The result text. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
     """
 
-    def __init__(self) -> None:
-        self.result: Optional[str] = None
+    def __init__(self, array_size: int = 30000, int_size: IntegerSize = 8) -> None:
+        BrainfuckBase.__init__(self)
+        HasSizes.__init__(self, array_size=array_size, int_size=int_size)
 
-    def __str__(self) -> str:
-        if self.result is None:
-            raise NotParsedException("The code has not been parsed yet.")
-        return self.result
-
-    def parse(self, text: str) -> None:
+    def parse(self, value: str) -> None:
         """Parse the given text.
 
         .. note::
@@ -48,18 +44,28 @@ class EncodedBrainfuck:
 
         Parameters
         ----------
-        text: str
+        value: str
             The text to parse.
         """
         # TODO: Optimize by factoring recursively
         self.result = ""
-        for character in text:
+        for character in value:
             num = ord(character)
             added = 0
-            factored = factor(num)
-            while 1 in factored:  # Does this cause an error for prime numbers?
+            while (
+                len(factored := factor_optimized(num + added, 8)) < 2
+            ):  # Does this cause an error for prime numbers?
                 added += 1
-                factored = factor(num + added)
+
+            def to_bf(val: int) -> str:
+                return ("+" if val > 0 else "-") * abs(val)
+
             self.result += (
-                f">{'+' * factored[0]}[<{'+' * factored[1]}>-]<{'-' * added}.>"
+                ">" * (len(factored) - 1)
+                + to_bf(factored[0])
+                + "".join(f"[<{to_bf(val)}" for i, val in enumerate(factored[1:]))
+                + ">-]" * (len(factored) - 1)
+                + "<" * (len(factored) - 1)
+                + to_bf(-added)
+                + ".>"
             )

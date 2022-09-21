@@ -1,38 +1,33 @@
 from typing import List, Optional, Tuple
 
+from .base import BrainfuckBase, HasSizes, IntegerSize
 from .enums import Code, Symbol
-from .exceptions import NotParsedException
+
+__all__ = ("CompiledBrainfuck",)
 
 
-class CompiledBrainfuck:
+class CompiledBrainfuck(BrainfuckBase, HasSizes):
     """An object to represent python compiled from Brainfuck.
 
     To receive the decoded text, use :attr:`result` or
     str(:class:`DecodedBrainfuck`).
 
     .. warning::
-        This class is not intended to be instantiated directly. Use :meth:`decode` or :meth:`BrainfuckTools.decode`
+        This class is not intended to be instantiated directly. Use :func:`compile_bf` or :meth:`BrainfuckTools.compile`
         instead.
 
     Attributes
     ----------
     result: Optional[str]
-        The result code. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
+        The result text. This will never be ``None`` unless :meth:`parse` has not been called. Since the library
         always calls :meth:`parse` before returning the object, this should never happen unless you override the
         functionality of the library.
     """
 
-    # pylint: disable=duplicate-code
-    # TODO: Use a base class to avoid duplicate code
-    def __init__(self) -> None:
+    def __init__(self, array_size: int = 30000, int_size: IntegerSize = 8) -> None:
+        BrainfuckBase.__init__(self)
+        HasSizes.__init__(self, array_size=array_size, int_size=int_size)
         self._raw_parsed: Optional[List[Symbol]] = []
-        self.result: Optional[str] = None
-
-    def __str__(self) -> str:
-        if self.result is None:
-            raise NotParsedException("The code has not been parsed yet.")
-
-        return self.result
 
     @property
     def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
@@ -46,9 +41,6 @@ class CompiledBrainfuck:
         .. note::
             This is meant to be used internally and you should not need to use it.
 
-        .. versionchanged:: 0.3.0
-            Now returns ``None`` instead of raising a ValueError.
-
         Returns
         -------
         Optional[Tuple[Symbol]]
@@ -58,7 +50,7 @@ class CompiledBrainfuck:
             return None
         return tuple(self._raw_parsed)
 
-    def parse(self, code: str) -> None:
+    def parse(self, value: str) -> None:
         """Parse the given code.
 
         .. note::
@@ -68,21 +60,66 @@ class CompiledBrainfuck:
 
         Parameters
         ----------
-        code: str
+        value: str
             The code to parse.
         """
         self._raw_parsed = []
-        for character in code:
+        for character in value:
             try:
                 parsed = Symbol(character)
                 self._raw_parsed.append(parsed)
             except ValueError:  # TODO: add support for comments
                 # Since comments are not supported yet, let's just skip for now
                 continue
-        self.result = """
-main = bytearray(30000)
-position = 0
+        self.result = f"""
+import sys
+import typing
+
+
+IntegerSize = {IntegerSize}
+
+
+class Main:
+    def __init__(self, array_size: int = 30000, int_size: IntegerSize = 8) -> None:
+        self._size = array_size
+        self._data = bytearray(self._size)
+        self._position = 0
+        self._int_size = int_size
+
+    @property
+    def array_size(self) -> int:
+        return self._size
+
+    @property
+    def int_size(self) -> IntegerSize:
+        return self._int_size
+
+    def shift_right(self, amount: int) -> None:
+        self._position = (self._position + amount) % self._size
+
+    def shift_left(self, amount: int) -> None:
+        return self.shift_right(-amount)
+
+    def increment(self, amount: int) -> None:
+        # We could use += here, but that doesn't account for overflow
+        self._data[self._position] = (self._data[self._position] + amount) % (2 ** self._int_size)
+
+    def decrement(self, amount: int) -> None:
+        return self.increment(-amount)
+
+    def is_zero(self) -> bool:
+        return self._data[self._position] == 0
+
+    def get_input(self) -> int:
+        self._data[self._position] = ord(sys.stdin.read(1))
+
+    def output(self) -> None:
+        print(chr(self._data[self._position]), end='')
+
+
+main = Main(array_size={self._array_size}, int_size={self._int_size})
 """
+
         indentation = 0
         stackable = (Symbol.SHIFTLEFT, Symbol.SHIFTRIGHT, Symbol.ADD, Symbol.SUBTRACT)
         stack_level = 0
