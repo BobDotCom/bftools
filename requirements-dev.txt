@@ -7,3 +7,4 @@ coverage==6.4.4
 pre-commit==2.20.0
 pytest-xdist[psutil]==2.5.0
 pytest-randomly==3.12.0
+pytest-cov==3.0.0
