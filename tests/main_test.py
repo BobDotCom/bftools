@@ -30,16 +30,9 @@ class MockCompiler(HasSizes):
         return self._module.encode_text(value)
 
 
-numbers = (
-    [random.randint(1, 10000) for _ in range(5)]  # Random numbers
-    + [random.randint(1, 100) ** 2 for _ in range(5)]  # Squares
-    + [0]
-)
-
-
-@pytest.fixture(params=[random.randint(10000, 50000) for _ in range(2)])
-def array_size(request):
-    return request.param or None
+@pytest.fixture(params=range(2))
+def array_size():
+    return random.randint(10000, 100000)
 
 
 @pytest.fixture(params=[8, 16, 32, 64])
@@ -76,10 +69,19 @@ def test_conversions(compiler, code):
     run_conversion_test(compiler, code)
 
 
-@pytest.mark.parametrize("num", numbers)
-def test_factor(num):
-    a, b = bftools.factor(num)
-    assert a * b == num
+@pytest.fixture(params=range(11))
+def number(request):
+    if request.param == 0:
+        return 0
+    elif request.param < 6:
+        return random.randint(1, 10000)
+    else:
+        return random.randint(1, 100) ** 2
+
+
+def test_factor(number):
+    a, b = bftools.factor(number)
+    assert a * b == number
 
 
 @pytest.mark.parametrize(
@@ -102,3 +104,9 @@ def test_raw_parsed():
     bf_obj = bftools.CompiledBrainfuck()
     bf_obj._raw_parsed = None
     assert bf_obj.raw_parsed is None
+
+
+def test_hassizes():
+    compiler = bftools.BrainfuckTools()
+    assert compiler.array_size == 30000
+    assert compiler.int_size == 8

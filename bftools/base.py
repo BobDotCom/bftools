@@ -43,9 +43,7 @@ class BrainfuckBase(ABC):
     @abstractmethod
     def parse(self, value: str) -> None:
         """Should parse the given value."""
-        raise NotImplementedError(
-            "This method should be implemented by inheriting classes."
-        )
+        return  # pragma: no cover
 
 
 class HasSizes(ABC):
