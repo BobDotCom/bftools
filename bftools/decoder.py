@@ -1,5 +1,4 @@
 import io
-import sys
 
 from .base import BrainfuckBase
 
@@ -47,11 +46,13 @@ class DecodedBrainfuck(BrainfuckBase):
         SyntaxError
             If the code is not syntactically correct.
         """
-        # TODO: Override builtin print function instead of capturing stdout
         code_out = io.StringIO()
-        sys.stdout = code_out
-        exec(value)  # pylint: disable=exec-used  # nosec B102
-        sys.stdout = sys.__stdout__
+
+        def _print(*objects, sep=" ", end="\n", file=code_out, flush=False):
+            print(*objects, sep=sep, end=end, file=file, flush=flush)
+
+        # We want to override the builtin print function with _print
+        exec(value, {"print": _print})  # pylint: disable=exec-used  # nosec B102
         out = code_out.getvalue()
         code_out.close()
         self.result = out
