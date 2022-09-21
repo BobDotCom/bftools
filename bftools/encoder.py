@@ -52,9 +52,9 @@ class EncodedBrainfuck(BrainfuckBase, HasSizes):
         for character in value:
             num = ord(character)
             added = 0
-            while (
-                len(factored := factor_optimized(num + added, 8)) < 2
-            ):  # Does this cause an error for prime numbers?
+            # Use a walrus operator here when we drop support for Python 3.7
+            factored = factor_optimized(num + added, 8)
+            while len(factored) < 2:  # Does this cause an error for prime numbers?
                 added += 1
 
             def to_bf(val: int) -> str:

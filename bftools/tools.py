@@ -91,10 +91,14 @@ def factor_recursive(number: int) -> Tuple[int, ...]:
             return inner_result
         return (num,)
 
-    if (result := inner(number)) == ():
+    # Use a walrus operator here when we drop support for Python 3.7
+    result = inner(number)
+    if result == ():
         result = (1,)
 
-    if (count := result.count(2) // 2) > 0:
+    # Use a walrus operator here when we drop support for Python 3.7
+    count = result.count(2) // 2
+    if count > 0:
         temp = list(result)
         for _ in range(count):
             temp.remove(2)
