@@ -47,7 +47,6 @@ class EncodedBrainfuck(BrainfuckBase, HasSizes):
         value: str
             The text to parse.
         """
-        # TODO: Optimize by factoring recursively
         self.result = ""
         for character in value:
             num = ord(character)
