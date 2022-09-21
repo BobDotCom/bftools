@@ -56,6 +56,7 @@ class EncodedBrainfuck(BrainfuckBase, HasSizes):
             factored = factor_optimized(num + added, 8)
             while len(factored) < 2:  # Does this cause an error for prime numbers?
                 added += 1
+                factored = factor_optimized(num + added, 8)
 
             def to_bf(val: int) -> str:
                 return ("+" if val > 0 else "-") * abs(val)
