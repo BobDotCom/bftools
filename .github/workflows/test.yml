@@ -58,7 +58,7 @@ jobs:
       #        echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
       - name: Run code coverage with pytest
         run: |
-          coverage run -m pytest
+          pytest
           coverage xml
       - name: Upload code coverage to codecov.io
         uses: codecov/codecov-action@v3
