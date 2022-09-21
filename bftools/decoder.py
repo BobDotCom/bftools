@@ -1,4 +1,5 @@
 import io
+from typing import IO, Optional
 
 from .base import BrainfuckBase
 
@@ -48,8 +49,14 @@ class DecodedBrainfuck(BrainfuckBase):
         """
         code_out = io.StringIO()
 
-        def _print(*objects, sep=" ", end="\n", file=code_out, flush=False):
-            print(*objects, sep=sep, end=end, file=file, flush=flush)
+        def _print(
+            *values: object,
+            sep: Optional[str] = " ",
+            end: Optional[str] = "\n",
+            file: Optional[IO[str]] = code_out,
+            flush: bool = False
+        ) -> None:
+            print(*values, sep=sep, end=end, file=file, flush=flush)
 
         # We want to override the builtin print function with _print
         exec(value, {"print": _print})  # pylint: disable=exec-used  # nosec B102
