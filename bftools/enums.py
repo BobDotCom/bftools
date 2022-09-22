@@ -30,3 +30,8 @@ class Symbol(Enum):
     ENDLOOP = "]"
     INPUT = ","
     OUTPUT = "."
+    UNKNOWN = None
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN

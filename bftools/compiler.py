@@ -28,6 +28,7 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
         BrainfuckBase.__init__(self)
         HasSizes.__init__(self, array_size=array_size, int_size=int_size)
         self._raw_parsed: Optional[List[Symbol]] = []
+        self._comments = ""
 
     @property
     def raw_parsed(self) -> Optional[Tuple[Symbol, ...]]:
@@ -65,12 +66,10 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
         """
         self._raw_parsed = []
         for character in value:
-            try:
-                parsed = Symbol(character)
-                self._raw_parsed.append(parsed)
-            except ValueError:  # TODO: add support for comments
-                # Since comments are not supported yet, let's just skip for now
-                continue
+            parsed = Symbol(character)
+            self._raw_parsed.append(parsed)
+            if parsed == Symbol.UNKNOWN:
+                self._comments += character
         # TODO: Add correct IntegerSize typehints in compiled code
         self.result = f"""
 import sys
@@ -131,23 +130,51 @@ main = Main(array_size={self._array_size}, int_size={self._int_size})
         stackable = (Symbol.SHIFTLEFT, Symbol.SHIFTRIGHT, Symbol.ADD, Symbol.SUBTRACT)
         stack_level = 0
         stack_type = None
+        is_comment = False
+        comments = iter(self._comments)
         if self.raw_parsed is not None:
             for symbol in self.raw_parsed:
                 if symbol in stackable and stack_type == symbol:
                     stack_level += 1
                     stack_type = symbol
                     continue
+                if symbol.name == "UNKNOWN":
+                    value = next(comments)
+                    if not is_comment:
+                        # New comment. Unless it's a newline, we want to add a pound sign.
+                        if value != "\n":
+                            value = f"# {value}"
+                        is_comment = True
+                else:
+                    is_comment = False
+                    value = Code[symbol.name].value
+
                 if stack_level > 0:
-                    self.result += (
-                        f"\n{' ' * 4 * indentation}"
-                        f"{Code[stack_type.name].value.format(stack_level)}"  # type: ignore[union-attr]
-                    )
+                    new_value = Code[stack_type.name].value.format(stack_level)
                     stack_level = 0
+                    self.result += f"\n{' ' * 4 * indentation}{new_value}"
+
                 if symbol in stackable:
                     stack_level += 1
                     stack_type = symbol
                     continue
-                self.result += f"\n{' ' * 4 * indentation}{Code[symbol.name].value}"
+
+                try:
+                    # We're checking if there has been a newline since the last comment. The pound index needs to be
+                    # executed first, in case the first comment is on the first line. It's currently impossible for that
+                    # to happen, but it's good to be safe.
+                    pound_index = str.rindex(self.result, "#")
+                    is_continued_comment = is_comment
+                    if str.rindex(self.result, "\n") > pound_index:
+                        is_continued_comment = False
+                except ValueError:
+                    is_continued_comment = False
+                if not is_continued_comment:
+                    value = f"\n{' ' * 4 * indentation}{value}"
+                if value == "\n":
+                    is_comment = False
+                self.result += value
+
                 if symbol == Symbol.STARTLOOP:
                     indentation += 1
                 elif symbol == Symbol.ENDLOOP:
