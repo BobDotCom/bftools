@@ -67,7 +67,7 @@ class BrainfuckTools:
         self.last_encoded = encoder
         return encoder
 
-    def compile(self, code: str) -> CompiledBrainfuck:
+    def compile(self, code: str, minify: Optional[bool] = None) -> CompiledBrainfuck:
         """
         Compiles a brainfuck code into python code.
 
@@ -75,6 +75,8 @@ class BrainfuckTools:
         ----------
         code: str
             The brainfuck code to compile.
+        minify: Optional[bool]
+            Whether to minify the code or not.
 
         Returns
         -------
@@ -82,7 +84,7 @@ class BrainfuckTools:
             The compiled code.
         """
         compiler = self._new_compiler()
-        compiler.parse(code)
+        compiler.parse(code, minify=minify)
         return compiler
 
     def decode(self, value: str) -> DecodedBrainfuck:
@@ -173,7 +175,7 @@ def set_default_int_size(size: IntegerSize) -> None:
 
 
 # Some shortcuts
-def compile_bf(code: str) -> CompiledBrainfuck:
+def compile_bf(code: str, minify: Optional[bool] = None) -> CompiledBrainfuck:
     """Shortcut for :meth:`BrainfuckTools.compile`.
 
     This is equivalent to ``BrainfuckTools().compile(code)``.
@@ -188,7 +190,7 @@ def compile_bf(code: str) -> CompiledBrainfuck:
     CompiledBrainfuck
         The compiled code.
     """
-    return _get_instance().compile(code)
+    return _get_instance().compile(code, minify=minify)
 
 
 def decode_bf(code: str) -> DecodedBrainfuck:

@@ -1,9 +1,24 @@
+import inspect
+import os
 from typing import List, Optional, Tuple
 
 from .base import BrainfuckBase, HasSizes, IntegerSize
 from .enums import Code, Symbol
 
 __all__ = ("CompiledBrainfuck",)
+
+try:
+    import python_minifier
+except ImportError:
+    python_minifier = None
+
+
+def _handle_indentation(symbol: Symbol, indentation: int) -> int:
+    if symbol == Symbol.STARTLOOP:
+        indentation += 1
+    elif symbol == Symbol.ENDLOOP:
+        indentation -= 1
+    return indentation
 
 
 class CompiledBrainfuck(BrainfuckBase, HasSizes):
@@ -51,7 +66,19 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
             return None
         return tuple(self._raw_parsed)
 
-    def parse(self, value: str) -> None:
+    def _parse_raw(self, value: str) -> None:
+        self._raw_parsed = []
+        for character in value:
+            parsed = Symbol(character)
+            self._raw_parsed.append(parsed)
+            if parsed == Symbol.UNKNOWN:
+                self._comments += character
+
+    def parse(
+        self,
+        value: str,
+        minify: Optional[bool] = None,
+    ) -> None:
         """Parse the given code.
 
         .. note::
@@ -63,162 +90,88 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
         ----------
         value: str
             The code to parse.
+        minify: Optional[bool]
+            Whether to minify the code. If ``None``, this will be determined by whether :mod:`python_minifier` is
+            installed.
         """
-        self._raw_parsed = []
-        for character in value:
-            parsed = Symbol(character)
-            self._raw_parsed.append(parsed)
-            if parsed == Symbol.UNKNOWN:
-                self._comments += character
+        self._parse_raw(value)
         # TODO: Add correct IntegerSize typehints in compiled code
-        self.result = f"""
-import sys
 
-
-class Main:
-    def __init__(self, array_size: int = 30000, int_size: int = 8) -> None:
-        self._size = array_size
-        self._data = bytearray(self._size)
-        self._position = 0
-        self._int_size = int_size
-
-    @property
-    def array_size(self) -> int:
-        return self._size
-
-    @property
-    def int_size(self) -> int:
-        return self._int_size
-
-    def shift_right(self, amount: int) -> None:
-        self._position = (self._position + amount) % self._size
-
-    def shift_left(self, amount: int) -> None:
-        return self.shift_right(-amount)
-
-    def _get_value(self) -> int:
-        value = self._data[self._position]
-        for i in range(1, self._int_size // 8):
-            value += self._data[self._position + i] << (i * 8)
-        return value
-
-    def _set_value(self, value: int) -> None:
-        self._data[self._position] = value & 0xFF
-        for i in range(1, self._int_size // 8):
-            self._data[self._position + i] = (value >> (i * 8)) & 0xFF
-
-    def increment(self, amount: int) -> None:
-        self._set_value((self._get_value() + amount) % (2 ** self._int_size))
-
-    def decrement(self, amount: int) -> None:
-        return self.increment(-amount)
-
-    def is_zero(self) -> bool:
-        return self._data[self._position] == 0
-
-    def get_input(self) -> int:
-        self._data[self._position] = ord(sys.stdin.read(1))
-
-    def output(self) -> None:
-        print(chr(self._get_value()), end='')
-
-
-main = Main(array_size={self._array_size}, int_size={self._int_size})
-"""
-
+        with open(
+            os.path.join(os.path.dirname(__file__), "template.py"), encoding="utf-8"
+        ) as file:
+            self.result = file.read().format(self.array_size, self.int_size)
+        #             self.result += f"""
+        # main = Main(array_size={self.array_size}, int_size={self.int_size})
+        # """
         indentation = 0
         stackable = (Symbol.SHIFTLEFT, Symbol.SHIFTRIGHT, Symbol.ADD, Symbol.SUBTRACT)
         stack_level = 0
         stack_type = None
         is_comment = False
         comments = iter(self._comments)
-        if self.raw_parsed is not None:
-            for symbol in self.raw_parsed:
-                if symbol in stackable and stack_type == symbol:
-                    stack_level += 1
-                    stack_type = symbol
-                    continue
-                if symbol.name == "UNKNOWN":
-                    value = next(comments)
-                    if not is_comment:
-                        # New comment. Unless it's a newline, we want to add a pound sign.
-                        if value != "\n":
-                            value = f"# {value}"
-                        is_comment = True
-                else:
-                    is_comment = False
-                    value = Code[symbol.name].value
+        for symbol in self.raw_parsed or []:
+            if symbol in stackable and stack_type == symbol:
+                stack_level += 1
+                stack_type = symbol
+                continue
+            if symbol.name == "UNKNOWN":
+                value = next(comments)
+                if not is_comment:
+                    # New comment. Unless it's a newline, we want to add a pound sign.
+                    if value != "\n":
+                        value = f"# {value}"
+                    is_comment = True
+            else:
+                is_comment = False
+                value = Code[symbol.name].value
 
-                if stack_level > 0:
-                    new_value = Code[stack_type.name].value.format(stack_level)
-                    stack_level = 0
-                    self.result += f"\n{' ' * 4 * indentation}{new_value}"
+            if stack_level > 0:
+                new_value = Code[stack_type.name].value.format(stack_level)  # type: ignore[union-attr]
+                stack_level = 0
+                self.result += f"\n{' ' * 4 * indentation}{new_value}"
 
-                if symbol in stackable:
-                    stack_level += 1
-                    stack_type = symbol
-                    continue
+            if symbol in stackable:
+                stack_level += 1
+                stack_type = symbol
+                continue
 
-                try:
-                    # We're checking if there has been a newline since the last comment. The pound index needs to be
-                    # executed first, in case the first comment is on the first line. It's currently impossible for that
-                    # to happen, but it's good to be safe.
-                    pound_index = str.rindex(self.result, "#")
-                    is_continued_comment = is_comment
-                    if str.rindex(self.result, "\n") > pound_index:
-                        is_continued_comment = False
-                except ValueError:
+            try:
+                # We're checking if there has been a newline since the last comment. The pound index needs to be
+                # executed first, in case the first comment is on the first line. It's currently impossible for that
+                # to happen, but it's good to be safe.
+                pound_index = str.rindex(self.result, "#")
+                is_continued_comment = is_comment
+                if str.rindex(self.result, "\n") > pound_index:
                     is_continued_comment = False
-                if not is_continued_comment:
-                    value = f"\n{' ' * 4 * indentation}{value}"
-                if value == "\n":
-                    is_comment = False
-                self.result += value
+            except ValueError:
+                is_continued_comment = False
+            if not is_continued_comment:
+                value = f"\n{' ' * 4 * indentation}{value}"
+            if value == "\n":
+                is_comment = False
+            self.result += value
 
-                if symbol == Symbol.STARTLOOP:
-                    indentation += 1
-                elif symbol == Symbol.ENDLOOP:
-                    indentation -= 1
-        try:
-            import python_minifier  # type: ignore # pylint: disable=import-outside-toplevel
-        except ImportError:
-
-            class Minifier:
-                """
-                Mock class for python_minifier.
-
-                Does nothing.
-                """
-
-                @staticmethod
-                def minify(
-                    code_val: str, **kwargs: bool  # pylint: disable=unused-argument
-                ) -> str:
-                    """
-                    Mock method for python_minifier.
-
-                    Does nothing.
-                    Parameters
-                    ----------
-                    code_val: str
-                        The code to minify.
-                    kwargs
-                        The keyword arguments to pass to the method.
-
-                    Returns
-                    -------
-                    str
-                        Simply returns the value of "code_val".
-                    """
-                    return code_val
-
-            python_minifier = Minifier
-        self.result = python_minifier.minify(
-            self.result,
-            remove_literal_statements=True,
-            rename_globals=True,
-        )
+            indentation = _handle_indentation(symbol, indentation)
+        self._minify(minify)
         self.result = (
             "# Compiled using bftools (https://github.com/BobDotCom/bftools)\n"
             + (self.result or "")
+        )
+
+    def _minify(self, should_minify: Optional[bool] = True):
+        if should_minify is None:
+            should_minify = python_minifier is not None
+        if not should_minify:
+            return
+        if python_minifier is None:
+            raise ImportError("python_minifier is not installed")
+        kwargs = []
+        for key in ("remove_literal_statements", "rename_globals"):
+            if key in inspect.signature(python_minifier.minify).parameters:
+                kwargs.append(key)
+
+        self.result = python_minifier.minify(
+            self.result,
+            **{key: True for key in kwargs},
         )

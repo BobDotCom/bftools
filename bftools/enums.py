@@ -9,14 +9,14 @@ __all__ = (
 class Code(Enum):
     """Enum for python code from a :class:`.Symbol`."""
 
-    SHIFTRIGHT = "main.shift_right({0})"
-    SHIFTLEFT = "main.shift_left({0})"
-    ADD = "main.increment({0})"
-    SUBTRACT = "main.decrement({0})"
-    STARTLOOP = "while not main.is_zero():"
+    SHIFTRIGHT = "shift_right({0})"
+    SHIFTLEFT = "shift_left({0})"
+    ADD = "increment({0})"
+    SUBTRACT = "decrement({0})"
+    STARTLOOP = "while not is_zero():"
     ENDLOOP = ""
-    INPUT = "main.get_input()"
-    OUTPUT = "main.output()"
+    INPUT = "get_input()"
+    OUTPUT = "output()"
 
 
 class Symbol(Enum):
@@ -33,5 +33,5 @@ class Symbol(Enum):
     UNKNOWN = None
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object) -> "Symbol":
         return cls.UNKNOWN
