@@ -2,7 +2,7 @@
 pylint==2.15.3
 pytest==7.1.3
 pytest-order==1.0.1
-mypy==0.971
+mypy==0.981
 coverage==6.4.4
 pre-commit==2.20.0
 pytest-xdist[psutil]==2.5.0
