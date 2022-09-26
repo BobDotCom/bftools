@@ -159,7 +159,7 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
             + (self.result or "")
         )
 
-    def _minify(self, should_minify: Optional[bool] = True):
+    def _minify(self, should_minify: Optional[bool] = True) -> None:
         if should_minify is None:
             should_minify = python_minifier is not None
         if not should_minify:
