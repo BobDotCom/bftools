@@ -10,7 +10,7 @@ __all__ = ("CompiledBrainfuck",)
 try:
     import python_minifier
 except ImportError:
-    python_minifier = None
+    pass
 
 
 def _handle_indentation(symbol: Symbol, indentation: int) -> int:
@@ -160,11 +160,15 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
         )
 
     def _minify(self, should_minify: Optional[bool] = True) -> None:
+        try:
+            has_minifier = bool(python_minifier)
+        except NameError:
+            has_minifier = False
         if should_minify is None:
-            should_minify = python_minifier is not None
+            should_minify = has_minifier
         if not should_minify:
             return
-        if python_minifier is None:
+        if not has_minifier:
             raise ImportError("python_minifier is not installed")
         kwargs = []
         for key in ("remove_literal_statements", "rename_globals"):
@@ -172,6 +176,6 @@ class CompiledBrainfuck(BrainfuckBase, HasSizes):
                 kwargs.append(key)
 
         self.result = python_minifier.minify(
-            self.result,
-            **{key: True for key in kwargs},
+            self.result or "",
+            **{key: True for key in kwargs},  # type: ignore[arg-type]
         )
