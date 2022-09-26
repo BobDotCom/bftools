@@ -2,6 +2,7 @@ import io
 import random
 import string
 import sys
+from typing import IO, Optional
 
 import pytest
 
@@ -50,9 +51,19 @@ def run_conversion_test(comp, code):
     val = "".join(random.choice(string.ascii_letters) for _ in range(10))
     assert str(comp.decode(str(comp.encode(code)) + val)) == code
     code_out = io.StringIO()
-    sys.stdout = code_out
+
+    def _print(
+        *values: object,
+        sep: Optional[str] = " ",
+        end: Optional[str] = "\n",
+        file: Optional[IO[str]] = code_out,
+        flush: bool = False
+    ) -> None:
+        print(*values, sep=sep, end=end, file=file, flush=flush)
+
     exec(  # pylint: disable=exec-used  # nosec B102
-        str(comp.compile(str(comp.encode(code))))
+        str(comp.compile(str(comp.encode(code)))),
+        {"print": _print},
     )
     sys.stdout = sys.__stdout__
     out = code_out.getvalue()
