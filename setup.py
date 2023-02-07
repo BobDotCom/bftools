@@ -23,7 +23,6 @@ requirements = get_requirements()
 # Version Info
 version = ""
 with open("bftools/__init__.py", encoding="utf-8") as f:
-
     search = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
     )
